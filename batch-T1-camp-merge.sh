@@ -1,6 +1,6 @@
-hstream='hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-0.23.1-mr1-cdh4.0.0b2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
+hstream='hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
 pythonbin=/usr/bin/python2.7
-PYDIR="/data/4/yandong/projects/ae/"
+PYDIR="/home/yandong/workspace/ae"
 
 ### T1 data set ###
 
@@ -13,9 +13,9 @@ d2=$5
 T1_2=$6
 
 
-printf -v OUTDIR_HOME "/projects/output/merged/camp-%s-%04d%02d%02d-%04d%02d%02d" $T1_2 $year $m1 $d1 $year $m2 $d2
+printf -v OUTDIR_HOME "/projects/science/output/merged/camp-%s-%04d%02d%02d-%04d%02d%02d" $T1_2 $year $m1 $d1 $year $m2 $d2
 
-input_op_pre='/projects/input/user_campaign/user_campaign_table/'
+input_op_pre='/projects/science/input/user_campaign/user_campaign_table/'
 input_op_post=''
 
 #####same month
@@ -70,7 +70,7 @@ echo $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T1-camp-merge-yqu $i
 $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py f" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp.py" -file "$PYDIR/red_user_model_or_camp.py"
 else
  echo camp merge T2
-echo $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file 'map_camp.py' -file 'red_user_model_or_camp.py'
-$hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp.py" -file "$PYDIR/red_user_model_or_camp.py"
+echo $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T2-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file 'map_camp.py' -file 'red_user_model_or_camp.py'
+$hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T2-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp.py" -file "$PYDIR/red_user_model_or_camp.py"
 fi
 

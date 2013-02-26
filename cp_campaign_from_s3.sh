@@ -2,13 +2,13 @@ ACCDIR=/home/yandong
 
 function cp_data() {
     date=$1
-    hadoop fs -test -d /projects/input/user_campaign/user_campaign_table/${date} 2> /dev/null
+    hadoop fs -test -d /projects/science/input/user_campaign/user_campaign_table/${date} 2> /dev/null
     if [ $? -ne 0 ]
     then
       echo COPYING:hadoop distcp -conf ${ACCDIR}/account/insight-site.xml s3n://campaign-analytics/aggregate_campaign_data/user_campaign_table/dt=${date} /input/user_campaign/user_campaign_table/${date}
-      hadoop distcp -conf ${ACCDIR}/account/insight-site.xml s3n://campaign-analytics/aggregate_campaign_data/user_campaign_table/dt=${date} /projects/input/user_campaign/user_campaign_table/${date}
+      hadoop distcp -conf ${ACCDIR}/account/insight-site.xml s3n://campaign-analytics/aggregate_campaign_data/user_campaign_table/dt=${date} /projects/science/input/user_campaign/user_campaign_table/${date}
   else
-    echo WARNING: path already exists! /projects/input/user_campaign/user_campaign_table/${date}. skip copying...
+    echo WARNING: path already exists! /projects/science/input/user_campaign/user_campaign_table/${date}. skip copying...
     fi
 }
 

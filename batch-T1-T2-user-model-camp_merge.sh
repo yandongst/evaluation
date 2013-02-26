@@ -1,6 +1,6 @@
-hstream='hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-0.23.1-mr1-cdh4.0.0b2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
+hstream='hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
 pythonbin=/usr/bin/python2.7
-PYDIR="/data/4/yandong/projects/ae/"
+PYDIR="/home/yandong/workspace/ae"
 
 year=$1
 
@@ -28,8 +28,8 @@ printf -v T2_end "%04d%02d%02d" $year $t2_m2 $t2_d2
 echo "######DATA RANGE:  T1: ${T1_start} - ${T1_end}##########"
 echo "######DATA RANGE:  T2: ${T2_start} - ${T2_end}##########"
 
-INPUT_HOME=/projects/output/merged
-OUTDIR_HOME=/projects/output/merged/usermodel-camp-T1-${T1_start}-${T1_end}-T2-${T2_start}-${T2_end}
+INPUT_HOME=/projects/science/output/merged
+OUTDIR_HOME=/projects/science/output/merged/usermodel-camp-T1-${T1_start}-${T1_end}-T2-${T2_start}-${T2_end}
 #OUTDIR_HOME=/projects/output/merged/usermodel_w5-camp-T1-${T1_start}-${T1_end}-T2-${T2_start}-${T2_end}
 
 ### MERGE T1 AND T2

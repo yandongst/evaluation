@@ -2,7 +2,7 @@ ACCDIR=/home/yandong
 function cp_data() {
     date=$1
     event=$2
-    hadoop fs -test -d /projects/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event} 2> /dev/null
+    hadoop fs -test -d /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event} 2> /dev/null
     #echo return value $?
     #hadoop fs -test -z /input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event} 2> /dev/null
     #echo return value $?
@@ -10,10 +10,10 @@ function cp_data() {
     #echo return value $?
     if [ $? -ne 0 ]
     then
-      echo [COPYING]: hadoop distcp -conf ${ACCDIR}/account/insight-site.xml s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
-      hadoop distcp -conf ${ACCDIR}/account/insight-site.xml -update s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects//input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
+      echo [COPYING]: hadoop distcp -conf ${ACCDIR}/account/insight-site.xml s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
+      hadoop distcp -conf ${ACCDIR}/account/insight-site.xml -update s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
     else
-      echo [WARNING]: path already exists! /projects/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}. skip copying...
+      echo [WARNING]: path already exists! /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}. skip copying...
     fi
 }
 

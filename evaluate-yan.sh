@@ -1,16 +1,16 @@
 #T1
 #only support time period that spans within a year for now
-year1=2012
-t1_m1=12
-t1_d1=4
-t1_m2=12
-t1_d2=16
+year1=2013
+t1_m1=1
+t1_d1=16
+t1_m2=1
+t1_d2=23
 
 #T2
-t2_m1=12
-t2_d1=4
-t2_m2=12
-t2_d2=16
+t2_m1=1
+t2_d1=16
+t2_m2=1
+t2_d2=23
 
 t1_m1=`echo $t1_m1|sed 's/^0*//'`
 t1_m2=`echo $t1_m2|sed 's/^0*//'`
@@ -213,15 +213,14 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  outputdir=/projects/science/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-count
+  outputdir=/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-count
   hadoop fs -test -z $outputdir 2> /dev/null
   if [ $? -ne 0 ]
   then
     echo $outputdir count file doesnt exist
   else
     echo hadoop fs -text ${outputdir}/*.gz \|python metrics.py ${pixel_file}\|awk -f awk_gt.awk \|sort -k4nr -t\"	\" \> ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    #hadoop fs -text ${outputdir}/*.gz |python metrics.py ${pixel_file} |awk -f awk_gt.awk |sort -k4nr -t\"	\" > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    ./report.sh ${outputdir}/*.gz ${pixel_file} > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
+    hadoop fs -text ${outputdir}/*.gz |python metrics.py ${pixel_file} |awk -f awk_gt.awk |sort -k4nr -t\"	\" > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
     echo "generated: tmpstats_T1_${T1}_T2_${T2}.txt"
   fi
 else

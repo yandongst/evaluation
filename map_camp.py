@@ -21,6 +21,9 @@ def proc(l):
   except Exception as inst:
     sys.stderr.write(str(inst)+'\n')
     return
+
+  if 'campaigns' not in j: return
+
   t = j['campaigns']
   #print t
   for event in t:

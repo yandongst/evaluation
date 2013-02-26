@@ -1,14 +1,22 @@
 #!/usr/bin/env sh
-#HADOOP_HOME=/usr
-#HADOOP_HOME_STREAMING=/usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-0.23.1-mr1-cdh4.0.0b2.jar
-hstream='hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-0.23.1-mr1-cdh4.0.0b2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
-PYDIR="/data/4/yandong/projects/ae/"
+hstream='hadoop jar  /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
+PYDIR="/home/yandong/workspace/ae"
 
 
 ### T1 data set ###
 
 #/input/user_model/sharethis-insights-backup/model/20120317
 
+function usage() {
+  echo "Usage: $0 year month1 day1 month2 day2"
+  echo "  e.g. $0 2012 03 20 04 05"
+  exit 1
+}
+
+if [ $# -ne 5 ]
+then
+  usage
+fi
 
 year=$1
 m1=$2
@@ -16,15 +24,17 @@ d1=$3
 m2=$4
 d2=$5
 
-INPUT_HOME=/projects/input/user_model/sharethis-insights-backup/model/
-printf -v OUTDIR_HOME "/projects/output/merged/usermodel-T1-%04d%02d%02d-%04d%02d%02d" $year $m1 $d1 $year $m2 $d2
+INPUT_HOME=/projects/science/input/user_model/sharethis-insights-backup/model/
+printf -v OUTDIR_HOME "/projects/science/output/merged/usermodel-T1-%04d%02d%02d-%04d%02d%02d" $year $m1 $d1 $year $m2 $d2
 
 input_path="" 
+
+event_seq="1 2 4 5 9"
 
 #####same month
 if [ $m1 -eq $m2 ]
 then
-  for event in 1 2 4 9
+  for event in $event_seq
   do
     for (( d=$d1; d <= $d2; d++ ))
     do
@@ -42,7 +52,7 @@ then
 else
 #####diff months 
   #######first month
-  for event in 1 2 4 9
+  for event in $event_seq
   do
     for (( d=$d1; d <= 31; d++ ))
     do
@@ -63,7 +73,7 @@ else
   #######mid months 
   for (( m=$m_start; m <=$m_end; m++ ))
   do 
-    for event in 1 2 4 9
+    for event in $event_seq
     do
       for (( d=1; d <= 31; d++ ))
       do
@@ -81,7 +91,7 @@ else
   done
 
   #######last month
-  for event in 1 2 4 9
+  for event in $event_seq
   do
     for (( d=1; d <= $d2; d++ ))
     do
