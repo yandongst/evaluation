@@ -1,16 +1,17 @@
 #T1
 #only support time period that spans within a year for now
-year1=$1
-t1_m1=$2
-t1_d1=$3
-t1_m2=$4
-t1_d2=$5
+year1=$(date --date='-1 day' +%Y)
+t1_m1=$(date --date='-1 day' +%m)
+t1_d1=$(date --date='-1 day' +%d)
+t1_m2=$(date --date='-1 day' +%m)
+t1_d2=$(date --date='-1 day' +%d)
 
 #T2
-t2_m1=$6
-t2_d1=$7
-t2_m2=$8
-t2_d2=$9
+year2=$(date --date='-1 day' +%Y)
+t2_m1=$(date --date='-1 day' +%m)
+t2_d1=$(date --date='-1 day' +%d)
+t2_m2=$(date --date='-1 day' +%m)
+t2_d2=$(date --date='-1 day' +%d)
 
 t1_m1=`echo $t1_m1|sed 's/^0*//'`
 t1_m2=`echo $t1_m2|sed 's/^0*//'`
@@ -21,17 +22,7 @@ t1_d2=`echo $t1_d2|sed 's/^0*//'`
 t2_d1=`echo $t2_d1|sed 's/^0*//'`
 t2_d2=`echo $t2_d2|sed 's/^0*//'`
 
-#make it 0 to turn it off
-tagseg=0
-fn_tag="2012032_disney_rt_rt2_nrt_test_adgroups.txt"
-
-#campaign to analyze. need to specify retarg/imp/click pixels
-pixel_file=disney_pixels.txt
-pixel_file=amex_sqi_pixels.txt
-pixel_file=pixel_msft_surface.txt
-
-printf -v T1 "%04d%02d%02i-%04d%02d%02d" $year1 $t1_m1 $t1_d1 $year1 $t1_m2 $t1_d2
-printf -v T2 "%04d%02d%02i-%04d%02d%02d" $year1 $t2_m1 $t2_d1 $year1 $t2_m2 $t2_d2
+cd /home/yandong/workspace/ae
 
 function pause() {
   return 0
@@ -125,7 +116,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./cp_campaign_from_s3.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 
+  ./cp_uct_from_s3.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 
 else
   echo "You skipped copy campaign data T1:$T1"
 fi
@@ -137,7 +128,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-camp-merge.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 T1
+  ./batch-T1-camp-merge-uct.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 T1
 else
   echo "You skipped merge T1 camp data T1:$T1"
 fi
@@ -149,7 +140,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./cp_campaign_from_s3.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 
+  ./cp_uct_from_s3.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 
 else
   echo "You skipped copy campaign data T2:$T2"
 fi
@@ -161,7 +152,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-camp-merge.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 T2
+  ./batch-T1-camp-merge-uct.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 T2
 else
   echo "You skipped merge T2 camp data T2:$T2"
 fi
@@ -173,58 +164,8 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-T2-user-model-camp_merge.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2
+  ./batch-T1-T2-user-model-camp_merge2.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2
 else
   echo "You skipped merge T1-usermodel, T1-campaign, T2-campaign data"
 fi
 newline
-
-
-if [ $tagseg == 1 ]
-then
-echo "##########################################################"
-echo add segment tags
-echo "##########################################################"
-pause
-if [ $? != 1 ]
-then
-  ./batch-tag-segs.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2 $fn_tag
-else
-  echo "You skipped add segment tags"
-fi
-newline
-fi
-
-echo "##########################################################"
-echo generate count file from step 6 merged file
-echo "##########################################################"
-pause
-if [ $? != 1 ]
-then
-  echo ./batch-count.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2 $tagseg
-  ./batch-count.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2 $tagseg
-else
-  echo "You skipped generate count file from step 6 merged file"
-fi
-newline
-
-echo "##########################################################"
-echo derive stats file
-echo "##########################################################"
-pause
-if [ $? != 1 ]
-then
-  outputdir=/projects/science/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-count
-  hadoop fs -test -z $outputdir 2> /dev/null
-  if [ $? -ne 0 ]
-  then
-    echo $outputdir count file doesnt exist
-  else
-    echo hadoop fs -text ${outputdir}/*.gz \|python metrics.py ${pixel_file}\|awk -f awk_gt.awk \|sort -k4nr -t\"	\" \> ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    #hadoop fs -text ${outputdir}/*.gz |python metrics.py ${pixel_file} |awk -f awk_gt.awk |sort -k4nr -t\"	\" > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    ./report.sh ${outputdir}/*.gz ${pixel_file} > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    echo "generated: tmpstats_T1_${T1}_T2_${T2}.txt"
-  fi
-else
-  echo "You skipped derive stats file"
-fi

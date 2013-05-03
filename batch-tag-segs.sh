@@ -1,7 +1,5 @@
 
-HADOOP_HOME=/usr/local/hadoop-0.20.1
-HADOOP_HOME_STREAMING=/usr/local/hadoop-0.20.1
-HADOOP_HOME_STREAMING=/usr/local/hadoop-0.20.1/contrib/streaming/hadoop-0.20.1-streaming.jar 
+HADOOP_HOME_STREAMING=/usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar
 PYDIR="/home/yandong/workspace/ae"
 
 
@@ -37,6 +35,6 @@ OUTDIR_HOME=/projects/science/output/merged/usermodel-camp-T1-${T1_start}-${T1_e
 #fn_path=2012032_disney_domestic_adgroups_aggregated.txt
 #fn_f=2012032_disney_domestic_adgroups_aggregated.txt
 
-echo $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME_STREAMING -D mapred.reduce.tasks=500 -D mapred.job.name=add_tag_seg -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "python map_tag_segs.py $fn_path" -file 'map_tag_segs.py' -reducer 'cat' -file "$PYDIR/$fn_path"
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME_STREAMING -D mapred.reduce.tasks=500 -D mapred.job.name=add_seg_tag -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "python map_tag_segs.py $fn_path" -file 'map_tag_segs.py' -reducer 'cat' -file "$PYDIR/$fn_path"
+echo hadoop jar $HADOOP_HOME_STREAMING -D mapred.reduce.tasks=500 -D mapred.job.name=add_tag_seg -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "python map_tag_segs.py $fn_path" -file 'map_tag_segs.py' -reducer 'cat' -file "$PYDIR/$fn_path"
+hadoop jar $HADOOP_HOME_STREAMING -D mapred.reduce.tasks=500 -D mapred.job.name=add_seg_tag -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "python2.7 map_tag_segs.py $fn_path" -file 'map_tag_segs.py' -reducer 'cat' -file "$PYDIR/$fn_path"
 

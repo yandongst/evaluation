@@ -1,11 +1,9 @@
 #!/usr/bin/env sh
-hstream='hadoop jar  /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
+hstream='hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec'
 PYDIR="/home/yandong/workspace/ae"
 
 
 ### T1 data set ###
-
-#/input/user_model/sharethis-insights-backup/model/20120317
 
 function usage() {
   echo "Usage: $0 year month1 day1 month2 day2"

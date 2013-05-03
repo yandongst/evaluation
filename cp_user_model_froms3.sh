@@ -10,7 +10,9 @@ function cp_data() {
     #echo return value $?
     if [ $? -ne 0 ]
     then
-      echo [COPYING]: hadoop distcp -conf ${ACCDIR}/account/insight-site.xml s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
+      echo [COPYING]: hadoop distcp -update hdfs://ads-nn1.east.sharethis.com:8020/projects/bt/prod/json/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
+      hadoop distcp -update hdfs://ads-nn1.east.sharethis.com:8020/projects/bt/prod/json/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
+      echo [COPYING]: hadoop distcp -conf ${ACCDIR}/account/insight-site.xml -update s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
       hadoop distcp -conf ${ACCDIR}/account/insight-site.xml -update s3n://sharethis-insights-backup/model/${date}/query/updated/${event} /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}
     else
       echo [WARNING]: path already exists! /projects/science/input/user_model/sharethis-insights-backup/model/${date}/query/updated/${event}. skip copying...

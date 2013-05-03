@@ -1,16 +1,17 @@
 #T1
 #only support time period that spans within a year for now
-year1=2012
-t1_m1=9
-t1_d1=17
-t1_m2=9
-t1_d2=29
+year1=$(date --date='-14 day' +%Y)
+t1_m1=$(date --date='-14 day' +%m)
+t1_d1=$(date --date='-14 day' +%d)
+t1_m2=$(date --date='-1 day' +%m)
+t1_d2=$(date --date='-1 day' +%d)
 
 #T2
-t2_m1=9
-t2_d1=30
-t2_m2=10
-t2_d2=3
+year2=$(date --date='-14 day' +%Y)
+t2_m1=$(date --date='-14 day' +%m)
+t2_d1=$(date --date='-14 day' +%d)
+t2_m2=$(date --date='-1 day' +%m)
+t2_d2=$(date --date='-1 day' +%d)
 
 t1_m1=`echo $t1_m1|sed 's/^0*//'`
 t1_m2=`echo $t1_m2|sed 's/^0*//'`
@@ -21,12 +22,13 @@ t1_d2=`echo $t1_d2|sed 's/^0*//'`
 t2_d1=`echo $t2_d1|sed 's/^0*//'`
 t2_d2=`echo $t2_d2|sed 's/^0*//'`
 
-#make it 0 to turn it off
-tagseg=0
-fn_tag="2012032_disney_rt_rt2_nrt_test_adgroups.txt"
+cd /home/yandong/workspace/ae
 
-#campaign to analyze. need to specify retarg/imp/click pixels
-pixel_file=nordstrom_uggs_pixels.txt
+#make it 0 to turn it off
+tagseg=1
+tag_name="RT_Clorox"
+tag_file="clorox_fjm.txt"
+
 
 printf -v T1 "%04d%02d%02i-%04d%02d%02d" $year1 $t1_m1 $t1_d1 $year1 $t1_m2 $t1_d2
 printf -v T2 "%04d%02d%02i-%04d%02d%02d" $year1 $t2_m1 $t2_d1 $year1 $t2_m2 $t2_d2
@@ -123,7 +125,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./cp_campaign_from_s3.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 
+  ./cp_uct_from_s3.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 
 else
   echo "You skipped copy campaign data T1:$T1"
 fi
@@ -135,7 +137,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-camp-merge.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 T1
+  ./batch-T1-camp-merge-uct.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 T1
 else
   echo "You skipped merge T1 camp data T1:$T1"
 fi
@@ -147,7 +149,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./cp_campaign_from_s3.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 
+  ./cp_uct_from_s3.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 
 else
   echo "You skipped copy campaign data T2:$T2"
 fi
@@ -159,7 +161,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-camp-merge.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 T2
+  ./batch-T1-camp-merge-uct.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 T2
 else
   echo "You skipped merge T2 camp data T2:$T2"
 fi
@@ -181,17 +183,18 @@ newline
 if [ $tagseg == 1 ]
 then
 echo "##########################################################"
-echo add segment tags
+echo add custom rt tags
 echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-tag-segs.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2 $fn_tag
+  hadoop jar /usr/lib/hadoop-0.20-mapreduce/contrib/streaming/hadoop-streaming-2.0.0-mr1-cdh4.1.2.jar -D mapred.task.timeout=24000000 -D mapred.output.compress=true -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec -D mapred.reduce.tasks=0 -D mapred.job.name=AddCustomRtTag -input /projects/science/output/merged/usermodel-camp-T1-${T1}-T2-${T2} -output /projects/science/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-tagseg -mapper "python2.7 mapper-expandAudience.py tag_file.txt" -file mapper-expandAudience.py -file tag_file.txt -file clorox_seed.txt -file mgm_lv_seed.txt -file hsn_Kitchen_seed.txt -file amex_seed.txt -file wendys_seed.txt -file clorox_seed2.txt -file gopro_seed.txt -file hsn_Arcade_seed.txt -file att_mobility_seed.txt -file RadioShack_seed.txt
 else
   echo "You skipped add segment tags"
 fi
 newline
 fi
+
 
 echo "##########################################################"
 echo generate count file from step 6 merged file
@@ -206,22 +209,39 @@ else
 fi
 newline
 
+
 echo "##########################################################"
 echo derive stats file
 echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  outputdir=/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-count
-  hadoop fs -test -z $outputdir 2> /dev/null
-  if [ $? -ne 0 ]
-  then
-    echo $outputdir count file doesnt exist
-  else
-    echo hadoop fs -text ${outputdir}/*.gz \|python metrics.py ${pixel_file}\|awk -f awk_gt.awk \|sort -k4nr -t\"	\" \> ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    hadoop fs -text ${outputdir}/*.gz |python metrics.py ${pixel_file} |awk -f awk_gt.awk |sort -k4nr -t\"	\" > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    echo "generated: tmpstats_T1_${T1}_T2_${T2}.txt"
-  fi
+   outputdir=/projects/science/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-tagseg-count
+   hadoop fs -test -z $outputdir 2> /dev/null
+   if [ $? -ne 0 ] 
+   then
+     echo $outputdir count file doesnt exist
+   else
+     for pixel_file in `cat pixel_file.txt`
+     do
+      echo hadoop fs -text ${outputdir}/*.gz \|python metrics.py ${pixel_file}\|awk -f awk_gt.awk \> report/${pixel_file}_stats_T1_${T1}_T2_${T2}.xls
+      hadoop fs -text ${outputdir}/*.gz |python metrics.py ${pixel_file}.txt |awk -f awk_gt.awk > report/${pixel_file}_stats_T1_${T1}_T2_${T2}.xls
+     done
+   fi
 else
   echo "You skipped derive stats file"
 fi
+
+echo "##########################################################"
+echo select top domains
+echo "##########################################################"
+ls *T1_${T1}_T2_${T2}.xls |sed 's/.xls//g' > all_campaigns_T1_${T1}_T2_${T2}.txt
+for f in `cat all_campaigns_T1_${T1}_T2_${T2}.txt`
+do
+  echo ${f}
+  for i in 100 200 500
+  do
+    echo ${i}
+    cat ${f}.xls |grep -v '^feature'| grep -e '^9.' -e '^19.'|sort -nrk5|cut -f1|grep -v 'anonymous.google'|grep -v -e 'porn' -e 'sex' -e 'xxx' -e 'xvideo'| sed 's/19\.//g' |sed 's/9\.//g'|awk -F'/' '{print $1}'|sed 's/ //g'|sed 's/www\.//g'|tr '[A-Z]' '[a-z]'|head -${i} > TopDomain${i}_${f}.txt
+  done
+done

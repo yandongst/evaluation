@@ -15,8 +15,8 @@ T1_2=$6
 
 printf -v OUTDIR_HOME "/projects/science/output/merged/camp-%s-%04d%02d%02d-%04d%02d%02d" $T1_2 $year $m1 $d1 $year $m2 $d2
 
-input_op_pre='/projects/science/input/user_campaign/user_campaign_table/'
-input_op_post=''
+input_op_pre='/projects/science/input/uct/'
+input_op_post='daily'
 input_path="" 
 
 function check_and_cp() {
@@ -81,13 +81,12 @@ echo $input_op
 
 if [  $T1_2 == 'T1' ]
 then
-
- echo camp merge T1
-echo $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py f" -reducer "$pythonbin red_user_model_or_camp.py" -file 'map_camp.py' -file 'red_user_model_or_camp.py'
-$hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py f" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp.py" -file "$PYDIR/red_user_model_or_camp.py"
+    echo camp merge T1
+    echo $hstream -D mapred.reduce.tasks=10 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp_uct.py f" -reducer "$pythonbin red_user_model_or_camp.py" -file 'map_camp_uct.py' -file 'red_user_model_or_camp.py'
+    $hstream -D mapred.reduce.tasks=10 -D mapred.job.name=T1-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp_uct.py f" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp_uct.py" -file "$PYDIR/red_user_model_or_camp.py"
 else
- echo camp merge T2
-echo $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T2-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file 'map_camp.py' -file 'red_user_model_or_camp.py'
-$hstream -D mapred.reduce.tasks=500 -D mapred.job.name=T2-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp.py" -file "$PYDIR/red_user_model_or_camp.py"
+    echo camp merge T2
+    echo $hstream -D mapred.reduce.tasks=10 -D mapred.job.name=T2-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp_uct.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file 'map_camp_uct.py' -file 'red_user_model_or_camp.py'
+    $hstream -D mapred.reduce.tasks=10 -D mapred.job.name=T2-camp-merge-yqu $input_op -output ${OUTDIR_HOME} -mapper "$pythonbin map_camp_uct.py t" -reducer "$pythonbin red_user_model_or_camp.py" -file "$PYDIR/map_camp_uct.py" -file "$PYDIR/red_user_model_or_camp.py"
 fi
 

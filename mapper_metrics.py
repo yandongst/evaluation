@@ -45,6 +45,15 @@ def read_target_pixels(fn):
       pixels[tag]=[]
     pixels[tag].append(pixel)
 
+def print_target(x,type,f,uniq,nonuniq):
+  print 'target\t'+','.join([type,f,str(uniq),str(nonuniq)])
+
+def print_adx(f,uniq,nonuniq):
+  print 'adx\t'+','.join([f,str(uniq),str(nonuniq)])
+
+def print_feature(f,uniq,nonuniq):
+  print 'feature\t'+','.join([f,str(uniq),str(nonuniq)])
+
 def inc_count(x,type,f,c):
   if type not in x:
     x[type]={}
@@ -55,51 +64,29 @@ def inc_count(x,type,f,c):
     x[type][f]+=c
 
 def proc(l):
-  #if len(l.split('\t')) !=2:
-    #print 'err:'+l
-    #return
   k,v = l.split('\t')
   kk = k.split('-')
   v1,v2 = v.split(' ')
   v1=float(v1)
-  v2=float(v2)
-
+  v2=float(v2) 
 
   #feature-target count
   if len(kk)==2:
-    if v2>=threshold:
-      if kk[1] not in x_nontrivial_feature:
-        if kk[1] == '':
-          #print 'added:%s'%l
-          return
-        x_nontrivial_feature.add(kk[1]) 
-      #if co feature-target pair
-      for key in ['retarg','impr','click']: 
-        if match_target(kk[0], key):
-          inc_count(x_target_feature_uniq,key,kk[1], v1)
-          inc_count(x_target_feature,key,kk[1], v2)
-        if match_cotarget(kk[0], key):
-          #print 'matched cotarget', kk[0], key
-          inc_count(x_cotarget_feature_uniq,key,kk[1], v1)
-          inc_count(x_cotarget_feature,key, kk[1],v2) 
-          #print x_cotarget_feature
-      else:
-        pass
+    #if co feature-target pair
+    for key in ['retarg','impr','click']: 
+      if match_target(kk[0], key):
+        print_target(x_target_feature_uniq,key,kk[1], v1,v2)
+      elif match_cotarget(kk[0], key):
+        print_target(x_cotarget_feature_uniq,key,kk[1], v1,v2)
+
   #single target or feature count
   else:
     if k.startswith('t.'):
-      #if k == 't.'+target:
-        #print l
-      ##do nothing for target count. not used in calculation
       pass 
     elif k.startswith('adx.'):
-      if v2>=threshold:
-        x_feature_adx_uniq[k[4:]]=v1
-        x_feature_adx[k[4:]]=v2
+      print_adx(k,v1,v2)
     else:
-      if v2>=threshold:
-        x_feature_uniq[k]=v1
-        x_feature[k]=v2
+      print_feature(k,v1,v2)
 
 def print_header():
     print 'feature\tadx_cnt\tfeature_cnt\tretarg_cnt\tretarg_prob\tviewers\tclickers\tclicker_rate\tviews\tclicks\tCTR'
@@ -125,8 +112,6 @@ def get_ratio_str(x,k1,k2):
   return str
 
 def output_stats(merge_cocount):
-  #print x_cotarget_feature
-  #print x_feature_uniq
   for k in x_nontrivial_feature:
     count_uniq = {} #feature's co-count with target
     count_nonuniq = {} #feature's nonuniq co-count with target
@@ -202,7 +187,7 @@ if len(sys.argv) > 2:
 if merge_cocount:sys.stderr.write('coconut\n')
 
 read_target_pixels(fn)
-sys.stderr.write('pixels:'+str(pixels)+'\n')
+#sys.stderr.write('pixels:'+str(pixels)+'\n')
 
 for key in ['retarg','impr','click']: 
   x_target_feature[key]={}
@@ -210,7 +195,7 @@ for key in ['retarg','impr','click']:
   x_cotarget_feature[key]={}
   x_cotarget_feature_uniq[key]={}
 
-print_header()
+#print_header()
 
 for l in sys.stdin:
   l = l.strip()

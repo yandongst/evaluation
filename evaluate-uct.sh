@@ -29,6 +29,7 @@ fn_tag="2012032_disney_rt_rt2_nrt_test_adgroups.txt"
 pixel_file=disney_pixels.txt
 pixel_file=amex_sqi_pixels.txt
 pixel_file=pixel_msft_surface.txt
+pixel_file=pixel_test.txt
 
 printf -v T1 "%04d%02d%02i-%04d%02d%02d" $year1 $t1_m1 $t1_d1 $year1 $t1_m2 $t1_d2
 printf -v T2 "%04d%02d%02i-%04d%02d%02d" $year1 $t2_m1 $t2_d1 $year1 $t2_m2 $t2_d2
@@ -125,7 +126,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./cp_campaign_from_s3.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 
+  ./cp_uct_from_s3.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 
 else
   echo "You skipped copy campaign data T1:$T1"
 fi
@@ -137,7 +138,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-camp-merge.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 T1
+  ./batch-T1-camp-merge-uct.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 T1
 else
   echo "You skipped merge T1 camp data T1:$T1"
 fi
@@ -149,7 +150,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./cp_campaign_from_s3.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 
+  ./cp_uct_from_s3.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 
 else
   echo "You skipped copy campaign data T2:$T2"
 fi
@@ -161,7 +162,7 @@ echo "##########################################################"
 pause
 if [ $? != 1 ]
 then
-  ./batch-T1-camp-merge.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 T2
+  ./batch-T1-camp-merge-uct.sh $year1 $t2_m1 $t2_d1 $t2_m2 $t2_d2 T2
 else
   echo "You skipped merge T2 camp data T2:$T2"
 fi

@@ -1,16 +1,13 @@
-#T1
-#only support time period that spans within a year for now
-year1=$1
-t1_m1=$2
-t1_d1=$3
-t1_m2=$4
-t1_d2=$5
-
-#T2
-t2_m1=$6
-t2_d1=$7
-t2_m2=$8
-t2_d2=$9
+#only support time period that spans within a year for now 
+year1=`date --date='-14 day'  +%Y|sed 's/^0*//'`
+t1_m1=`date  --date='-14 day' +%m|sed 's/^0*//'`
+t1_d1=`date  --date='-14 day' +%d|sed 's/^0*//'`
+t1_m2=`date  --date='-8 day' +%m|sed 's/^0*//'`
+t1_d2=`date  --date='-8 day' +%d|sed 's/^0*//'`
+t2_m1=`date  --date='-7 day' +%m|sed 's/^0*//'`
+t2_d1=`date  --date='-7 day' +%d|sed 's/^0*//'`
+t2_m2=`date  --date='-1 day' +%m|sed 's/^0*//'`
+t2_d2=`date  --date='-1 day' +%d|sed 's/^0*//'`
 
 t1_m1=`echo $t1_m1|sed 's/^0*//'`
 t1_m2=`echo $t1_m2|sed 's/^0*//'`
@@ -20,6 +17,7 @@ t1_d1=`echo $t1_d1|sed 's/^0*//'`
 t1_d2=`echo $t1_d2|sed 's/^0*//'`
 t2_d1=`echo $t2_d1|sed 's/^0*//'`
 t2_d2=`echo $t2_d2|sed 's/^0*//'`
+
 
 #make it 0 to turn it off
 tagseg=0
@@ -205,26 +203,4 @@ then
   ./batch-count.sh $year1 $t1_m1 $t1_d1 $t1_m2 $t1_d2 $t2_m1 $t2_d1 $t2_m2 $t2_d2 $tagseg
 else
   echo "You skipped generate count file from step 6 merged file"
-fi
-newline
-
-echo "##########################################################"
-echo derive stats file
-echo "##########################################################"
-pause
-if [ $? != 1 ]
-then
-  outputdir=/projects/science/output/merged/usermodel-camp-T1-${T1}-T2-${T2}-count
-  hadoop fs -test -z $outputdir 2> /dev/null
-  if [ $? -ne 0 ]
-  then
-    echo $outputdir count file doesnt exist
-  else
-    echo hadoop fs -text ${outputdir}/*.gz \|python metrics.py ${pixel_file}\|awk -f awk_gt.awk \|sort -k4nr -t\"	\" \> ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    #hadoop fs -text ${outputdir}/*.gz |python metrics.py ${pixel_file} |awk -f awk_gt.awk |sort -k4nr -t\"	\" > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    ./report.sh ${outputdir}/*.gz ${pixel_file} > ${pixel_file}_stats_T1_${T1}_T2_${T2}.txt
-    echo "generated: tmpstats_T1_${T1}_T2_${T2}.txt"
-  fi
-else
-  echo "You skipped derive stats file"
 fi

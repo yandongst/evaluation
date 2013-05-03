@@ -39,6 +39,6 @@ fi
 
 
 
-echo $hstream -D mapred.reduce.tasks=500 -D mapred.job.name=count -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "$pythonbin map_count_pri.py" -file "$PYDIR/map_count_pri.py" -reducer "$pythonbin red_metrics.py" -file "$PYDIR/red_metrics.py"
-$hstream -D mapred.reduce.tasks=500 -D mapred.job.name=count -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "$pythonbin map_count_pri.py" -file "$PYDIR/map_count_pri.py" -reducer "$pythonbin red_metrics.py" -file "$PYDIR/red_metrics.py"
+echo $hstream -D mapred.reduce.tasks=20 -D mapred.job.name=count -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "$pythonbin map_count_pri.py" -file "$PYDIR/map_count_pri.py" -reducer "$pythonbin red_metrics.py" -file "$PYDIR/red_metrics.py"
+$hstream -D mapred.reduce.tasks=20 -D mapred.job.name=count -input ${INPUT_HOME} -output ${OUTDIR_HOME} -mapper "$pythonbin map_count_pri.py" -file "$PYDIR/map_count_pri.py" -reducer "$pythonbin red_metrics.py" -file "$PYDIR/red_metrics.py"
 
